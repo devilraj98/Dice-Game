@@ -1,0 +1,6 @@
+helm/
+Dockerfile
+Jenkinsfile
+*.md
+.git/
+.gitignore
