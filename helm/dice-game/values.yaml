@@ -1,0 +1,11 @@
+replicaCount: 1
+
+image:
+  repository: devilraj98/dice-game
+  tag: "latest"
+  pullPolicy: Always
+
+service:
+  type: LoadBalancer
+  port: 80
+

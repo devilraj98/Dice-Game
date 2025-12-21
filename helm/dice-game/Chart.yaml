@@ -1,0 +1,7 @@
+apiVersion: v2
+name: dice-game
+description: A Helm chart for deploying Dice Game static website
+type: application
+version: 1.0.0
+appVersion: "1.0"
+
