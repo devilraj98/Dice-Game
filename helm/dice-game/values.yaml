@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: devilraj98/dice-game
-  tag: "latest"
+  repository: neeraj98/dice-game
+  tag: "01"
   pullPolicy: Always
 
 service:
