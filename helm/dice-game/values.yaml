@@ -2,10 +2,10 @@ replicaCount: 1
 
 image:
   repository: neeraj98/dice-game
-  tag: "01"
-  pullPolicy: Always
+  tag: "latest"
+  pullPolicy: IfNotPresent
 
 service:
-  type: LoadBalancer
+  type: NodePort
   port: 80
 
