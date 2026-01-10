@@ -277,7 +277,7 @@ http://localhost:8090
 ### Error 1: NodeCreationFailure in EKS
 
 **Reason:** Free‑tier instance incompatibility and IAM misconfiguration
-**Fix:** Switched to Minikube for learning
+**Fix:** Switched to Minikube for learning.
 
 ---
 
