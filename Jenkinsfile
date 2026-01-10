@@ -16,6 +16,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "neeraj98/dice-game"
+        IMAGE_TAG = "${params.IMAGE_TAG}"
     }
 
 
@@ -31,7 +32,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh """
-                  docker build -t ${DOCKER_IMAGE}:${params.IMAGE_TAG} .
+                  docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} .
                 """
             }
         }
@@ -40,7 +41,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_TOKEN')]) {
                     sh """
-                    echo $DOCKER_TOKEN | docker login -u your-dockerhub-username --password-stdin
+                    echo $DOCKER_TOKEN | docker login -u neeraj98 --password-stdin
                     docker push ${DOCKER_IMAGE}:${IMAGE_TAG}
                     """
                 }
