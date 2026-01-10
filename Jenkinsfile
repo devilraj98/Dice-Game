@@ -1,12 +1,23 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(
+            name: 'ENV',
+            choices: ['dev', 'stage', 'prod'],
+            description: 'Deployment environment'
+        )
+        string(
+            name: 'IMAGE_TAG',
+            defaultValue: 'v1',
+            description: 'Docker image tag'
+        )
+    }
+
     environment {
         DOCKER_IMAGE = "neeraj98/dice-game"
-        DOCKER_TAG   = "${BUILD_NUMBER}"
-        HELM_RELEASE = "dice-game"
-        K8S_NAMESPACE = "default"
     }
+
 
     stages {
 
@@ -20,36 +31,56 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh """
-                  docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
+                  docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} .
                 """
             }
         }
 
         stage('Push Image to DockerHub') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
+                withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_TOKEN')]) {
                     sh """
-                      echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                      docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    echo $DOCKER_TOKEN | docker login -u your-dockerhub-username --password-stdin
+                    docker push ${DOCKER_IMAGE}:${IMAGE_TAG}
                     """
                 }
             }
         }
 
-        stage('Deploy with Helm') {
+        stage('Deploy to Kubernetes') {
+            when {
+                 expression { params.ENV != 'prod' }
+              }
+              steps {
+                   sh """
+                   helm upgrade --install dice-game helm/dice-game \
+                   --set image.repository=${DOCKER_IMAGE} \
+                   --set image.tag=${IMAGE_TAG}
+                   """
+                }
+        }
+        stage('Production Approval') {
+            when {
+                 expression { params.ENV == 'prod' }
+                 }
+                 steps {
+                     input message: "Approve production deployment?"
+                 }
+        }
+        stage('Deploy to Production') {
+            when {
+                expression { params.ENV == 'prod' }
+            }
             steps {
                 sh """
-                  helm upgrade --install ${HELM_RELEASE} helm/dice-game \
-                    --namespace ${K8S_NAMESPACE} \
-                    --set image.repository=${DOCKER_IMAGE} \
-                    --set image.tag=${DOCKER_TAG}
+                helm upgrade --install dice-game helm/dice-game \
+                --set image.repository=${DOCKER_IMAGE} \
+                --set image.tag=${IMAGE_TAG}
                 """
-            }
+             }
         }
+
+
     }
 
     post {
@@ -60,5 +91,5 @@ pipeline {
             echo "Pipeline failed"
         }
     }
-    
+
 }
