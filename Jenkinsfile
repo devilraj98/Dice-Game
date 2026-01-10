@@ -31,7 +31,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh """
-                  docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} .
+                  docker build -t ${DOCKER_IMAGE}:${params.IMAGE_TAG} .
                 """
             }
         }
