@@ -1,14 +1,21 @@
-# Use official lightweight NGINX image
+# -------- Stage 1: Build --------
+FROM nginx:alpine AS build
+
+WORKDIR /usr/share/nginx/html
+COPY index.html .
+
+# -------- Stage 2: Runtime --------
 FROM nginx:alpine
 
-# Remove the default NGINX website
-RUN rm -rf /usr/share/nginx/html/*
+# Create non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Copy your website (HTML, CSS, JS) into NGINX web directory
-COPY . /usr/share/nginx/html/
+# Copy only required files
+COPY --from=build /usr/share/nginx/html /usr/share/nginx/html
 
-# Expose port 80
+# Change ownership
+RUN chown -R appuser:appgroup /usr/share/nginx/html
+
+USER appuser
+
 EXPOSE 80
-
-# Start NGINX server
-CMD ["nginx", "-g", "daemon off;"]
