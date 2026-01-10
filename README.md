@@ -157,9 +157,49 @@ sudo systemctl start jenkins
 sudo systemctl enable jenkins
 ```
 
+**Get Jenkins Initial Password:**
+```bash
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+
+**Access Jenkins:** `http://<EC2_PUBLIC_IP>:8080`
+
 ---
 
-### 5.7 Jenkins Kubernetes Access Fix (Important)
+### 5.7 Jenkins Plugin Installation
+
+**Required Plugins:**
+1. Go to **Manage Jenkins** → **Plugins** → **Available Plugins**
+2. Install these plugins:
+   * Docker Pipeline
+   * Kubernetes CLI
+   * Pipeline
+   * Git
+   * Credentials Binding
+
+**Restart Jenkins after installation**
+
+---
+
+### 5.8 Configure Jenkins Credentials
+
+**DockerHub Credentials:**
+1. Go to **Manage Jenkins** → **Credentials** → **System** → **Global credentials**
+2. Click **Add Credentials**
+3. Select **Username with password**
+4. Enter:
+   * Username: `<your-dockerhub-username>`
+   * Password: `<your-dockerhub-token>`
+   * ID: `dockerhub-credentials`
+
+**Create DockerHub Token:**
+1. Login to DockerHub → Account Settings → Security
+2. Create **New Access Token** with **Read/Write** permissions
+3. Use this token as password in Jenkins
+
+---
+
+### 5.9 Jenkins Kubernetes Access Fix (Important)
 
 Minikube certificates are created under the **ubuntu** user.
 To allow Jenkins access:
@@ -180,19 +220,28 @@ kubectl get nodes
 
 ---
 
-## 6. Jenkins Pipeline (CI/CD)
+## 6. Jenkins Pipeline Configuration
 
-### Pipeline Stages
+### 6.1 Create Pipeline Job
+
+1. **New Item** → **Pipeline** → Name: `dice-game-pipeline`
+2. **Pipeline Definition:** Pipeline script from SCM
+3. **SCM:** Git
+4. **Repository URL:** `https://github.com/<your-username>/Dice-Game.git`
+5. **Branch:** `*/main`
+6. **Script Path:** `Jenkinsfile`
+
+### 6.2 Pipeline Stages
 
 1. Checkout code from GitHub
 2. Build Docker image
 3. Push image to DockerHub
 4. Deploy to Kubernetes using Helm
 
-Jenkinsfile uses:
-
-* DockerHub credentials (token‑based)
-* Helm `upgrade --install`
+**Jenkinsfile Requirements:**
+* Uses `dockerhub-credentials` for authentication
+* Implements `withCredentials` binding
+* Helm `upgrade --install` for deployment
 
 ---
 
@@ -253,7 +302,21 @@ http://localhost:8090
 
 ---
 
-### Error 5: App not accessible via EC2_IP:NodePort
+### Error 5: Jenkins plugin missing
+
+**Reason:** Required plugins not installed (Docker Pipeline, Kubernetes CLI)
+**Fix:** Installed plugins via Manage Jenkins → Plugins
+
+---
+
+### Error 6: Credentials binding failure
+
+**Reason:** DockerHub credentials not properly configured in Jenkins
+**Fix:** Added credentials with correct ID matching Jenkinsfile
+
+---
+
+### Error 7: App not accessible via EC2_IP:NodePort
 
 **Reason:** Minikube Docker driver networking limitation
 **Fix:** Used `kubectl port-forward` + SSH tunneling
