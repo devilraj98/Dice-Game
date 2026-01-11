@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dice-game-deployment
-  labels:
-    app: dice-game
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -14,26 +12,24 @@ spec:
       labels:
         app: dice-game
     spec:
+      # Use the default UID for nginx-unprivileged (101)
       securityContext:
+        runAsUser: 101
         fsGroup: 101
       containers:
       - name: dice-game
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        volumeMounts:
-          - name: nginx-cache
-            mountPath: /var/cache/nginx
         ports:
         - containerPort: 8080
         readinessProbe:
           httpGet:
-            path: /health
+            path: /      
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
           httpGet:
-            path: /health
+            path: /      
             port: 8080
           initialDelaySeconds: 15
           periodSeconds: 20
@@ -44,6 +40,3 @@ spec:
           limits:
             cpu: "500m"
             memory: "256Mi"
-      volumes:
-        - name: nginx-cache
-          emptyDir: {}
