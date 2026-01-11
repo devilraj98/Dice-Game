@@ -40,3 +40,6 @@ spec:
           limits:
             cpu: "500m"
             memory: "256Mi"
+          envFrom:
+          - configMapRef:
+              name: dice-game-config
