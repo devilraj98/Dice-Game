@@ -4,5 +4,5 @@ metadata:
   name: dice-game-config
 data:
   APP_NAME: "Dice Game"
-  APP_ENV: "{{ .Values.env | default \"dev\" }}"
+  APP_ENV: {{ .Values.env | default "dev" | quote }}
   APP_OWNER: "DevOps Team"

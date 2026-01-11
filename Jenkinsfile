@@ -77,7 +77,7 @@ pipeline {
                 sh """
                 helm upgrade --install dice-game helm/dice-game \
                 --set image.repository=${DOCKER_IMAGE} \
-                --set image.tag=${IMAGE_TAG}
+                --set image.tag=${IMAGE_TAG} \
                 --set env=${ENV}
                 """
              }
