@@ -47,6 +47,6 @@ spec:
           - name: API_KEY
             valueFrom:
               secretKeyRef:
-                name: dice-game-secret
+                name: mysecret
                 key: API_KEY
 
