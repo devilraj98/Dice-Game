@@ -9,7 +9,7 @@ pipeline {
         )
         string(
             name: 'IMAGE_TAG',
-            defaultValue: 'v1',
+            defaultValue: 'v6',
             description: 'Docker image tag'
         )
     }
