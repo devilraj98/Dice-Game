@@ -155,6 +155,8 @@ sudo apt update
 sudo apt install -y jenkins
 sudo systemctl start jenkins
 sudo systemctl enable jenkins
+sudo usermod -aG docker jenkins
+newgrp docker
 ```
 
 **Get Jenkins Initial Password:**
