@@ -43,3 +43,10 @@ spec:
           envFrom:
           - configMapRef:
               name: dice-game-config
+        env:
+          - name: API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: dice-game-secret
+                key: API_KEY
+

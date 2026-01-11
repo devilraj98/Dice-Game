@@ -9,3 +9,5 @@ service:
   type: NodePort
   port: 80
 
+secrets:
+  apiKey: "dummy-api-key-for-dev"
