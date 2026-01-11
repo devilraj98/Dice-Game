@@ -1,21 +1,13 @@
 # -------- Stage 1: Build --------
-FROM nginx:alpine AS build
-
+FROM nginxinc/nginx-unprivileged:alpine AS build
 WORKDIR /usr/share/nginx/html
 COPY index.html .
 
 # -------- Stage 2: Runtime --------
-FROM nginx:alpine
+FROM nginxinc/nginx-unprivileged:alpine
 
-# Create non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-# Copy only required files
+# Copy files from build stage
 COPY --from=build /usr/share/nginx/html /usr/share/nginx/html
 
-# Change ownership
-RUN chown -R appuser:appgroup /usr/share/nginx/html
-
-USER appuser
-
-EXPOSE 80
+# No need to create users or change ownership; it's already handled!
+EXPOSE 8080
