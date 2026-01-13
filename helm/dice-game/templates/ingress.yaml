@@ -2,12 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dice-game-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: dice-game.local
-      http:
+    - http:
         paths:
           - path: /
             pathType: Prefix
