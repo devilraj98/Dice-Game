@@ -1,0 +1,45 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: dice-game-alerts
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: dice-game.rules
+      rules:
+        - alert: DiceGamePodDown
+          expr: kube_pod_status_ready{condition="true", pod=~"dice-game.*"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Dice Game pod is down"
+            description: "Dice Game pod has been unavailable for more than 1 minute"
+
+        - alert: DiceGameHighCPU
+          expr: rate(container_cpu_usage_seconds_total{pod=~"dice-game.*"}[2m]) > 0.5
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU usage on Dice Game"
+            description: "CPU usage is above 50% for 2 minutes"
+
+        - alert: DiceGameHighMemory
+          expr: container_memory_usage_bytes{pod=~"dice-game.*"} > 200 * 1024 * 1024
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High memory usage on Dice Game"
+            description: "Memory usage is above 200MB"
+
+        - alert: DiceGameRestarting
+          expr: increase(kube_pod_container_status_restarts_total{pod=~"dice-game.*"}[5m]) > 1
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Dice Game is restarting frequently"
+            description: "Pod restarted more than once in 5 minutes"
