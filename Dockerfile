@@ -1,13 +1,17 @@
-# -------- Stage 1: Build --------
-FROM nginxinc/nginx-unprivileged:alpine AS build
-WORKDIR /usr/share/nginx/html
-COPY index.html .
+FROM nginx:alpine
 
-# -------- Stage 2: Runtime --------
-FROM nginxinc/nginx-unprivileged:alpine
+# Remove the default NGINX website
 
-# Copy files from build stage
-COPY --from=build /usr/share/nginx/html /usr/share/nginx/html
+RUN rm -rf /usr/share/nginx/html/*
 
-# No need to create users or change ownership; it's already handled!
-EXPOSE 8080
+# Copy your website (HTML, CSS, JS) into NGINX web directory
+
+COPY . /usr/share/nginx/html/
+
+# Expose port 80
+
+EXPOSE 80
+
+# Start NGINX server
+
+CMD ["nginx", "-g", "daemon off;"]
