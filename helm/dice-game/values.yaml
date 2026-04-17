@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: neeraj98/dice-game
-  tag: "latest"
+  tag: "v7"
   pullPolicy: IfNotPresent
 
 service:
