@@ -8,5 +8,5 @@ spec:
     app: dice-game
   ports:
     - port: {{ .Values.service.port }} # External port (e.g., 80)
-      targetPort: 8080                # Internal container port
+      targetPort: 8090                # Internal container port
       protocol: TCP
